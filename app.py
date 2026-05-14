@@ -11,7 +11,7 @@ inject_styles()
 
 db = get_db()
 
-# ── Live stats from MongoDB ───────────────────────────────────────
+# Live stats from MongoDB 
 @st.cache_data(ttl=300)   # refresh every 5 minutes
 def get_live_stats():
     try:
@@ -74,7 +74,6 @@ def get_live_stats():
 
 stats = get_live_stats()
 
-# ── Hero ──────────────────────────────────────────────────────────
 st.markdown(f"""
 <div style="padding:48px 0 32px; text-align:center">
     <div style="font-family:'Space Mono',monospace; font-size:0.72rem;
@@ -107,7 +106,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Live stats row ────────────────────────────────────────────────
+# Live stats row 
 c1, c2, c3, c4, c5 = st.columns(5)
 live_stats = [
     (stats["devs"],       "Survey Responses"),
@@ -140,7 +139,6 @@ if stats["years"]:
 
 section_divider()
 
-# ── How it works ──────────────────────────────────────────────────
 st.markdown("""
 <h3 style="text-align:center; margin-bottom:24px">How It Works</h3>
 """, unsafe_allow_html=True)
@@ -178,7 +176,7 @@ for col, (num, icon, title, desc) in zip(cols, steps):
 
 section_divider()
 
-# ── Pages overview ────────────────────────────────────────────────
+# Pages overview
 st.markdown("<h3>Pages</h3>", unsafe_allow_html=True)
 
 pages = [
@@ -228,27 +226,27 @@ for i, (icon, title, desc, color) in enumerate(pages):
 
 section_divider()
 
-# ── Tech stack ────────────────────────────────────────────────────
+# Tech stack 
 st.markdown("<h3>Technology Stack</h3>", unsafe_allow_html=True)
 
 col1, col2, col3, col4 = st.columns(4)
 stacks = [
-    ("⚡ Big Data", [
+    (" Big Data", [
         "Apache Spark (PySpark)",
         "Spark MLlib ALS",
         "Distributed processing",
     ]),
-    ("🧠 ML / NLP", [
+    (" ML / NLP", [
         "Sentence-BERT",
         "Collaborative Filtering",
         "Semantic skill matching",
     ]),
-    ("🗄️ Storage", [
+    (" Storage", [
         "MongoDB Atlas (NoSQL)",
         f"{stats['bench_count']} benchmark records",
         f"{stats['n_years']} years of survey data",
     ]),
-    ("🎨 Frontend", [
+    (" Frontend", [
         "Streamlit",
         "Matplotlib + Seaborn",
         "Real-time job scraping",
@@ -272,7 +270,6 @@ for col, (title, items) in zip([col1,col2,col3,col4], stacks):
 
 section_divider()
 
-# ── Quick start ───────────────────────────────────────────────────
 st.markdown("<h3>Quick Start</h3>", unsafe_allow_html=True)
 
 col1, col2 = st.columns(2)
@@ -308,7 +305,6 @@ with col2:
     </div>
     """, unsafe_allow_html=True)
 
-# ── Live data notice ──────────────────────────────────────────────
 st.markdown(f"""
 <div style="background:rgba(0,212,255,0.05); border:1px solid
             rgba(0,212,255,0.15); border-radius:12px;
@@ -330,7 +326,7 @@ st.markdown(f"""
 
 section_divider()
 
-# ── Footer ────────────────────────────────────────────────────────
+# Footer 
 st.markdown(f"""
 <div style="text-align:center; padding:24px 0 12px;
             font-family:'Space Mono',monospace;
