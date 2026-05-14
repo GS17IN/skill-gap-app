@@ -28,7 +28,7 @@ page_banner(
 
 db = get_db()
 
-# ── Session state ─────────────────────────────────────────────────
+# Session state 
 if "resume_skills" not in st.session_state:
     st.session_state.resume_skills = []
 if "detected_role" not in st.session_state:
@@ -36,7 +36,7 @@ if "detected_role" not in st.session_state:
 if "live_jobs" not in st.session_state:
     st.session_state.live_jobs = []
 
-# ── Step 1: Upload Resume ─────────────────────────────────────────
+# Step 1: Upload Resume
 step_label(1, "Upload Resume")
 uploaded = st.file_uploader("Upload PDF or DOCX", type=["pdf", "docx"])
 
@@ -59,7 +59,7 @@ if uploaded:
 
 section_divider()
 
-# ── Step 2: Preferences ───────────────────────────────────────────
+# Step 2: Preferences 
 step_label(2, "Set Your Preferences")
 
 all_roles = list(ROLE_KEYWORDS.keys())
@@ -88,7 +88,7 @@ with col3:
 
 section_divider()
 
-# ── Step 3: Role Alignment ────────────────────────────────────────
+# Step 3: Role Alignment
 step_label(3, "Role Alignment Analysis")
 
 if st.session_state.resume_skills:
@@ -111,7 +111,7 @@ if st.session_state.resume_skills:
     # Verdict
     if alignment >= 70:
         st.success(
-            f"🎉 You are well aligned with **{target_role}**! "
+            f"You are well aligned with **{target_role}**! "
             f"Focus on the remaining {len(missing)} skills to reach 100%."
         )
     elif alignment >= 40:
@@ -121,7 +121,7 @@ if st.session_state.resume_skills:
         )
     else:
         st.error(
-            f"🚀 Significant upskilling needed for **{target_role}**. "
+            f"Significant upskilling needed for **{target_role}**. "
             f"{len(missing)} skills to learn."
         )
 
@@ -186,7 +186,7 @@ else:
 
 section_divider()
 
-# ── Step 4: Live Job Search ───────────────────────────────────────
+# Step 4: Live Job Search
 step_label(4, "Find Matching Jobs — Live")
 
 col1, col2 = st.columns([3, 1])
@@ -220,7 +220,7 @@ if scrape_btn and st.session_state.resume_skills:
             "Try again in a moment."
         )
 
-# ── Job Results ───────────────────────────────────────────────────
+# Job Results
 if st.session_state.live_jobs:
     jobs = st.session_state.live_jobs
 
