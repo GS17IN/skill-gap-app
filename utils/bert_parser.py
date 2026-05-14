@@ -6,7 +6,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer, util
 
 
-# ── Known skills with variations ─────────────────────────────────
+# Known skills with variations
 SKILL_VARIANTS = {
     "Python":                   ["python", "py"],
     "JavaScript":               ["javascript", "js", "node", "nodejs", "node.js"],
@@ -69,7 +69,7 @@ SKILL_VARIANTS = {
     "Swift":                    ["swift", "ios", "xcode"],
 }
 
-# ── Skill descriptions for semantic matching ──────────────────────
+# Skill descriptions for semantic matching 
 SKILL_DESCRIPTIONS = {
     "Python":        "Python programming language for data science, web development and automation",
     "JavaScript":    "JavaScript web development frontend and backend programming",
@@ -103,7 +103,7 @@ SKILL_DESCRIPTIONS = {
     "Grafana":       "Grafana metrics visualization monitoring dashboards",
 }
 
-# ── Singleton model loader ────────────────────────────────────────
+# Singleton model loader 
 _model = None
 
 def get_model():
@@ -114,7 +114,7 @@ def get_model():
     return _model
 
 
-# ── Method 1: Regex-based extraction (fast, high precision) ───────
+# Method 1: Regex-based extraction
 def extract_skills_regex(text):
     found  = set()
     text_l = text.lower()
@@ -127,7 +127,7 @@ def extract_skills_regex(text):
     return list(found)
 
 
-# ── Method 2: BERT semantic matching (catches unlisted skills) ────
+# Method 2: BERT semantic matching
 def extract_skills_bert(text, threshold=0.45):
     """
     Use sentence-transformers to semantically match resume sentences
@@ -169,7 +169,7 @@ def extract_skills_bert(text, threshold=0.45):
     return list(found)
 
 
-# ── Combined extraction ───────────────────────────────────────────
+#  Combined extraction 
 def extract_skills_combined(text):
     """
     Combine regex (high precision) + BERT (high recall).
@@ -196,7 +196,7 @@ def extract_skills_combined(text):
     return results
 
 
-# ── Role detection with BERT ──────────────────────────────────────
+# Role detection with BERT 
 ROLE_DESCRIPTIONS = {
     "Data Scientist":    "machine learning model training deep learning NLP data analysis statistical modeling",
     "Data Engineer":     "data pipeline ETL data warehouse Apache Spark Kafka data infrastructure",
