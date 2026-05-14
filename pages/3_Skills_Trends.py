@@ -16,7 +16,7 @@ inject_styles()
 
 db = get_db()
 
-# ── Load data ─────────────────────────────────────────────────────
+# Load data
 def load_trends():
     docs = list(db["skill_trends"].find({}, {"_id": 0}))
     return pd.DataFrame(docs)
@@ -50,7 +50,7 @@ if n_years < 2:
     st.info("Upload at least 2 years of survey data via the "
             "Spark Pipeline page to see trends.")
 
-# ── Summary metrics ───────────────────────────────────────────────
+# Summary metrics
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("Years Available",  str(available_years))
 col2.metric("Skills Tracked",   df["skill"].nunique())
@@ -59,7 +59,7 @@ col4.metric("Latest Year",      last_year)
 
 section_divider()
 
-# ── Build pivot ───────────────────────────────────────────────────
+# Build pivot 
 pivot = df.pivot_table(
     index="skill", columns="year",
     values="prevalence_pct", fill_value=0
@@ -71,7 +71,7 @@ first_col = str(first_year)
 last_col  = str(last_year)
 pivot["growth"] = pivot[last_col] - pivot[first_col]
 
-# ── Step 1: Growing vs Declining ─────────────────────────────────
+# Step 1: Growing vs Declining 
 if n_years >= 2:
     step_label(1, f"Skill Growth: {first_year} → {last_year}")
     top_n = st.slider("Number of skills to show", 5, 20, 10)
@@ -101,7 +101,7 @@ if n_years >= 2:
         plt.close()
 
     with col2:
-        st.markdown(f"**📉 Top {top_n} Declining Skills**")
+        st.markdown(f"**Top {top_n} Declining Skills**")
         mpl.rcParams.update(chart_style())
         fig2, ax2 = plt.subplots(figsize=(8, top_n * 0.5 + 1))
         bars2 = ax2.barh(
@@ -121,7 +121,7 @@ if n_years >= 2:
 
     section_divider()
 
-    # ── Step 2: Full growth table ─────────────────────────────────
+    # Step 2: Full growth table
     step_label(2, "Full Growth Table")
     display_pivot = pivot.copy().sort_values("growth", ascending=False)
     display_pivot["growth"] = display_pivot["growth"].round(2)
@@ -135,7 +135,7 @@ if n_years >= 2:
 
 section_divider()
 
-# ── Step 3: Line chart ────────────────────────────────────────────
+# Step 3: Line chart 
 step_label(3, "Skill Prevalence Over Time")
 
 if n_years < 2:
@@ -197,7 +197,7 @@ else:
 
 section_divider()
 
-# ── Step 4: Year-by-year snapshot ────────────────────────────────
+# Step 4: Year-by-year snapshot 
 step_label(4, "Year-by-Year Snapshot")
 st.markdown("Top 15 skills for each available year.")
 
