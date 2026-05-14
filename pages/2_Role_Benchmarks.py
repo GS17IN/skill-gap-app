@@ -34,7 +34,7 @@ if df.empty:
     st.warning("No benchmark data found. Run the Spark Pipeline first.")
     st.stop()
 
-# ── Role selector ─────────────────────────────────────────────────
+# Role selector
 roles    = sorted(df["DevType"].unique().tolist())
 selected = st.multiselect(
     "Select roles to compare:",
@@ -54,7 +54,7 @@ filtered = df[df["DevType"].isin(selected)] \
 
 section_divider()
 
-# ── Step 1: Top skills per role ───────────────────────────────────
+# Step 1: Top skills per role
 step_label(1, "Top 10 Skills per Role")
 
 for role in selected:
@@ -91,7 +91,7 @@ for role in selected:
 
 section_divider()
 
-# ── Step 2: Heatmap ───────────────────────────────────────────────
+# Step 2: Heatmap
 step_label(2, "Skill Prevalence Heatmap")
 st.markdown("Darker = more developers in that role know the skill.")
 
@@ -125,7 +125,7 @@ else:
 
 section_divider()
 
-# ── Step 3: Role comparison table ────────────────────────────────
+# Step 3: Role comparison table
 step_label(3, "Full Benchmark Table")
 
 role_filter = st.selectbox(
