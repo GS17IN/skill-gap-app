@@ -28,7 +28,7 @@ page_banner(
 
 db = get_db()
 
-# ── How is this different ─────────────────────────────────────────
+
 with st.expander("How is this different from basic keyword matching?"):
     col1, col2 = st.columns(2)
     with col1:
@@ -44,15 +44,15 @@ with st.expander("How is this different from basic keyword matching?"):
         st.markdown("""
         **BERT Analyzer (Semantic)**
         - Understands meaning and context
-        - Catches: "built REST APIs with Express" → Node.js ✅
-        - Catches: "deployed on EKS" → Kubernetes ✅
-        - Catches: "used GKE for orchestration" → Kubernetes ✅
+        - Catches: "built REST APIs with Express" - Node.js
+        - Catches: "deployed on EKS" - Kubernetes
+        - Catches: "used GKE for orchestration" - Kubernetes
         - Slightly slower but higher recall
         """)
 
 section_divider()
 
-# ── Step 1: Upload ────────────────────────────────────────────────
+# Step 1: Upload 
 step_label(1, "Upload Resume")
 uploaded = st.file_uploader(
     "Upload your resume (PDF or DOCX)",
@@ -81,12 +81,12 @@ if not text.strip():
 
 st.success(f"Extracted {len(text):,} characters from resume")
 
-with st.expander("👁️ View extracted text"):
+with st.expander("View extracted text"):
     st.text(text[:2000] + ("..." if len(text) > 2000 else ""))
 
 section_divider()
 
-# ── Step 2: BERT Skill Extraction ─────────────────────────────────
+# Step 2: BERT Skill Extraction 
 step_label(2, "BERT Skill Extraction")
 
 with st.spinner("Running BERT semantic skill extraction... ~15 seconds"):
@@ -107,7 +107,7 @@ c3.metric("BERT-only Finds",
 c4.metric("Both Methods",
           len(skills_df[skills_df["method"] == "Both"]))
 
-st.markdown("#### 🛠️ Extracted Skills")
+st.markdown("#### Extracted Skills")
 tab1, tab2, tab3 = st.tabs(["All Skills", "High Confidence", "BERT-only Finds"])
 
 with tab1:
@@ -139,7 +139,7 @@ with tab3:
 
 section_divider()
 
-# ── Step 3: BERT Role Detection ───────────────────────────────────
+# Step 3: BERT Role Detection
 step_label(3, "BERT Role Detection")
 
 with st.spinner("Running BERT role classification..."):
@@ -190,7 +190,7 @@ st.info(f"Using **{len(resume_skills)}** skills for gap analysis")
 
 section_divider()
 
-# ── Step 4: Gap Analysis ──────────────────────────────────────────
+# Step 4: Gap Analysis 
 step_label(4, "Skill Gap Analysis")
 
 benchmark_df          = get_benchmark_skills(db, selected_role)
@@ -219,7 +219,7 @@ with col2:
 
 section_divider()
 
-# ── Step 5: Personalized Roadmap ──────────────────────────────────
+# Step 5: Personalized Roadmap
 step_label(5, "Personalized Upskilling Roadmap")
 
 job_recs = get_job_market_recs(db, selected_role, resume_skills)
@@ -274,7 +274,7 @@ if not roadmap.empty:
 
 section_divider()
 
-# ── Step 6: Regex vs BERT Comparison ─────────────────────────────
+# Step 6: Regex vs BERT Comparison
 step_label(6, "Regex vs BERT Comparison")
 st.markdown("See exactly what BERT found that basic regex missed.")
 
