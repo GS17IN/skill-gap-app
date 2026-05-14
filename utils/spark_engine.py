@@ -6,7 +6,7 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.evaluation import RegressionEvaluator
 
-# ── Singleton Spark session ───────────────────────────────────────
+# Singleton Spark session 
 _spark = None
 
 def get_spark():
@@ -27,7 +27,7 @@ def get_spark():
     return _spark
 
 
-# ── Skill list ────────────────────────────────────────────────────
+# Skill list
 KNOWN_SKILLS = [
     "Python", "JavaScript", "TypeScript", "Java", "C#", "C++", "C", "Go",
     "Rust", "Kotlin", "Swift", "PHP", "Ruby", "Scala", "R", "SQL",
@@ -75,7 +75,7 @@ DEVTYPE_MAP = {
     "Student":                                       "Student",
 }
 
-# ── Step 1: Load & preprocess survey CSV ─────────────────────────
+# Step 1: Load & preprocess survey CSV
 
 def load_and_preprocess(csv_path, year, progress_cb=None):
     spark = get_spark()
@@ -121,7 +121,7 @@ def load_and_preprocess(csv_path, year, progress_cb=None):
     return df_skills
 
 
-# ── Step 2: Build role benchmark ──────────────────────────────────
+# Step 2: Build role benchmark 
 def build_benchmark(df_skills, threshold=30, progress_cb=None):
     if progress_cb: progress_cb("Building role benchmark...")
 
@@ -154,7 +154,7 @@ def build_benchmark(df_skills, threshold=30, progress_cb=None):
     return benchmark, benchmark_skills
 
 
-# ── Step 3: Train ALS model ───────────────────────────────────────
+# Step 3: Train ALS model 
 def train_als(df_skills, progress_cb=None):
     if progress_cb: progress_cb("Training ALS Collaborative Filtering model...")
 
@@ -191,7 +191,7 @@ def train_als(df_skills, progress_cb=None):
     return model, df_indexed
 
 
-# ── Step 4: Compute skill gaps ────────────────────────────────────
+# Step 4: Compute skill gaps
 def compute_skill_gaps(df_skills, benchmark_skills, progress_cb=None):
     if progress_cb: progress_cb("Computing skill gaps...")
 
@@ -216,7 +216,7 @@ def compute_skill_gaps(df_skills, benchmark_skills, progress_cb=None):
     return gap_df, role_gap
 
 
-# ── Step 5: Resume gap using Spark ───────────────────────────────
+# Step 5: Resume gap using Spark 
 def compute_resume_gap_spark(resume_skills, detected_role,
                               benchmark_skills_df, progress_cb=None):
     if progress_cb: progress_cb("Computing resume gap with Spark...")
@@ -253,7 +253,7 @@ def compute_resume_gap_spark(resume_skills, detected_role,
     return present, missing, gap_score
 
 
-# ── Step 6: ALS recommendations for resume user ───────────────────
+# Step 6: ALS recommendations for resume user
 def get_als_recommendations(resume_skills, detected_role,
                              df_skills, als_model,
                              df_indexed, progress_cb=None):
@@ -297,7 +297,7 @@ def get_als_recommendations(resume_skills, detected_role,
     return cf_recs
 
 
-# ── Full pipeline ─────────────────────────────────────────────────
+# Full pipeline 
 def run_full_pipeline(csv_paths_by_year, progress_cb=None):
     """
     Run complete Spark pipeline on survey CSVs.
