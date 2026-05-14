@@ -34,7 +34,7 @@ if df.empty:
                "Run the Spark Pipeline and scrape jobs first.")
     st.stop()
 
-# ── Summary stat card ─────────────────────────────────────────────
+# Summary stat card 
 col_stat, col_src, col_role = st.columns([1, 2, 2])
 
 with col_stat:
@@ -48,7 +48,7 @@ with col_stat:
 
 section_divider()
 
-# ── Step 1: Source & Role breakdown ──────────────────────────────
+# Step 1: Source & Role breakdown 
 step_label(1, "Job Postings Breakdown")
 
 col1, col2 = st.columns(2)
@@ -107,7 +107,7 @@ with col2:
 
 section_divider()
 
-# ── Step 2: Top skills per role ───────────────────────────────────
+# Step 2: Top skills per role
 step_label(2, "Top Skills Demanded by Role")
 
 roles    = sorted(df["role"].dropna().unique().tolist())
@@ -156,7 +156,7 @@ else:
 
 section_divider()
 
-# ── Step 3: Cross-role skill demand ───────────────────────────────
+# Step 3: Cross-role skill demand
 step_label(3, "Cross-Role Skill Demand")
 st.markdown("Which skills appear across the most roles?")
 
