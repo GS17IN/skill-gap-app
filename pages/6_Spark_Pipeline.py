@@ -28,7 +28,7 @@ page_banner(
     "survey CSV and watch Spark process it live"
 )
 
-# ── Step 1: Upload CSVs ───────────────────────────────────────────
+# Step 1: Upload CSVs 
 step_label(1, "Upload Survey CSV Files")
 st.info(
     "Upload any Stack Overflow Annual Developer Survey CSV files. "
@@ -48,7 +48,7 @@ if not uploaded_files:
 
 section_divider()
 
-# ── Step 2: Year detection ────────────────────────────────────────
+# Step 2: Year detection 
 step_label(2, "Auto-detecting Survey Years")
 
 def detect_year_from_df(df):
@@ -134,7 +134,7 @@ st.markdown(
 
 section_divider()
 
-# ── Step 3: Preview ───────────────────────────────────────────────
+# Step 3: Preview 
 step_label(3, "Preview Uploaded Data")
 
 selected_preview = st.selectbox(
@@ -163,7 +163,7 @@ with col2:
 
 section_divider()
 
-# ── Step 4: Pipeline Settings ─────────────────────────────────────
+# Step 4: Pipeline Settings
 step_label(4, "Pipeline Settings")
 
 col1, col2, col3 = st.columns(3)
@@ -194,7 +194,7 @@ st.markdown(f"""
 
 section_divider()
 
-# ── Step 5: Run Pipeline ──────────────────────────────────────────
+# Step 5: Run Pipeline 
 step_label(5, "Run Spark Pipeline")
 
 run_btn = st.button(
@@ -369,7 +369,7 @@ if run_btn:
                 except:
                     pass
 
-# ── Step 6: Results ───────────────────────────────────────────────
+# Step 6: Results
 if "spark_results" in st.session_state:
     results = st.session_state["spark_results"]
 
