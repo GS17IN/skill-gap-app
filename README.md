@@ -19,8 +19,8 @@ CareerLens is a scalable workforce intelligence platform that combines Apache Sp
 ## 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/CareerLens.git
-cd CareerLens
+git clone https://github.com/YOUR-USERNAME/skill-gap-app.git
+cd skill-gap-app
 ```
 
 ---
