@@ -7,6 +7,8 @@ matplotlib.use("Agg")
 import os
 import tempfile
 import seaborn as sns
+import re
+from utils.db import get_db
 from utils.spark_engine import (get_spark, load_and_preprocess,
                                  build_benchmark, compute_skill_gaps)
 from utils.styles       import (inject_styles, page_banner, step_label,
@@ -51,7 +53,15 @@ section_divider()
 # Step 2: Year detection 
 step_label(2, "Auto-detecting Survey Years")
 
-def detect_year_from_df(df):
+def detect_year_from_df(df, filename=""):
+
+    # 1. Detect from filename first
+    match = re.search(r'20\d{2}', filename)
+
+    if match:
+        return int(match.group())
+
+    # 2. Detect from explicit year columns
     for col_name in ["Year", "SurveyYear", "year", "survey_year"]:
         if col_name in df.columns:
             val = df[col_name].dropna().iloc[0]
@@ -59,24 +69,41 @@ def detect_year_from_df(df):
                 return int(str(val)[:4])
             except:
                 pass
+
+    # 3. Detect from column names
     for col in df.columns:
         for year in range(2020, 2030):
             if str(year) in col:
                 return year
-    date_cols = [c for c in df.columns
-                 if any(kw in c.lower()
-                        for kw in ["date","time","when","start"])]
+
+    # 4. Detect from date-like columns
+    date_cols = [
+        c for c in df.columns
+        if any(kw in c.lower()
+               for kw in ["date", "time", "when", "start"])
+    ]
+
     for col in date_cols:
         for val in df[col].dropna().head(10):
             for year in range(2020, 2030):
                 if str(year) in str(val):
                     return year
+
+    # 5. Schema signatures
     col_set = set(df.columns)
-    if "AINextYears5"              in col_set: return 2025
-    if "AIToolCurrently Using"     in col_set: return 2024
-    if "AISearchHaveWorkedWith"    in col_set: return 2023
-    if "VCInteraction"             in col_set: return 2022
-    if "SOVisitFreq" in col_set and "SOAccount" in col_set: return 2021
+
+    if "AINextYears5" in col_set:
+        return 2025
+
+    if "AIToolCurrently Using" in col_set:
+        return 2024
+
+    if "AISearchHaveWorkedWith" in col_set:
+        return 2023
+
+    if "VCInteraction" in col_set:
+        return 2022
+
     return None
 
 file_info = {}
@@ -89,7 +116,7 @@ for f in uploaded_files:
         st.error(f"Could not read {f.name}: {e}")
         continue
 
-    detected_year = detect_year_from_df(preview_df)
+    detected_year = detect_year_from_df(preview_df, f.name)
 
     col1, col2, col3 = st.columns([3, 1, 2])
     with col1:
@@ -490,7 +517,7 @@ if "spark_results" in st.session_state:
     section_divider()
 
     # MongoDB push
-    st.markdown("#### 💾 Save Results to MongoDB")
+    st.markdown("#### Save Results to MongoDB")
     st.markdown(
         "Push freshly computed Spark results to MongoDB Atlas. "
         "Skill trends are merged — existing years not overwritten."
@@ -499,7 +526,6 @@ if "spark_results" in st.session_state:
     if st.button("Push Pipeline Results to MongoDB",
                  type="primary"):
         try:
-            from utils.db import get_db
             import math
 
             db_conn = get_db()
@@ -569,3 +595,39 @@ if "spark_results" in st.session_state:
         except Exception as e:
             st.error(f"MongoDB push failed: {e}")
             st.exception(e)
+
+    section_divider()
+
+    # ── MongoDB Preview ─────────────────────────────────────
+    st.markdown("#### MongoDB Stored Records Preview")
+
+    db_conn = get_db()
+
+    collection_name = st.selectbox(
+        "Choose Collection",
+        [
+            "role_benchmarks",
+            "skill_trends",
+            "skill_gaps"
+        ]
+    )
+
+    try:
+        count = db_conn[collection_name].count_documents({})
+        st.info(f"{collection_name}: {count:,} documents")
+        docs = list(
+            db_conn[collection_name]
+            .find({}, {"_id": 0})
+            .limit(10)
+        )
+
+        if docs:
+            st.dataframe(
+                pd.DataFrame(docs),
+                use_container_width=True
+            )
+        else:
+            st.warning("No records found.")
+
+    except Exception as e:
+        st.error(f"Could not load MongoDB preview: {e}")

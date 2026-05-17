@@ -40,22 +40,27 @@ if "live_jobs" not in st.session_state:
 step_label(1, "Upload Resume")
 uploaded = st.file_uploader("Upload PDF or DOCX", type=["pdf", "docx"])
 
-if uploaded:
-    with st.spinner("Extracting skills from resume..."):
-        text = (extract_text_from_pdf(uploaded)
-                if uploaded.name.endswith(".pdf")
-                else extract_text_from_docx(uploaded))
-        st.session_state.resume_skills = extract_skills(text)
-        st.session_state.detected_role = detect_role(text)
-
-    st.success(
-        f"{len(st.session_state.resume_skills)} skills extracted"
+if not st.session_state.get("resume_skills"):
+    st.warning(
+        "No resume analyzed yet. "
+        "Please go to **Resume Analyzer** first."
     )
-    if st.session_state.resume_skills:
-        skill_badges(
-            sorted(st.session_state.resume_skills),
-            variant="high"
-        )
+    st.page_link(
+        "pages/1_Resume_Analyzer.py",
+        label="→ Go to Resume Analyzer",
+        icon="📄"
+    )
+    st.stop()
+
+# Skills loaded from BERT analyzer
+st.success(
+    f"Resume profile loaded from BERT Analyzer — "
+    f"**{len(st.session_state.resume_skills)} skills** detected"
+)
+skill_badges(sorted(st.session_state.resume_skills), variant="high")
+
+if st.session_state.get("detected_role"):
+    st.info(f" BERT detected role: **{st.session_state.detected_role}**")
 
 section_divider()
 
@@ -70,7 +75,7 @@ with col1:
         "Your Current / Detected Role",
         all_roles,
         index=(all_roles.index(st.session_state.detected_role)
-               if st.session_state.detected_role in all_roles else 0)
+               if st.session_state.get("detected_role") in all_roles else 0)
     )
 with col2:
     target_role = st.selectbox(

@@ -89,12 +89,31 @@ def load_and_preprocess(csv_path, year, progress_cb=None):
     if progress_cb: progress_cb(f" Loaded {df.count():,} rows")
 
     # Select relevant columns
-    cols = ["ResponseId", "DevType", "LanguageHaveWorkedWith"]
-    df   = df.select(cols) \
-             .filter(F.col("DevType").isNotNull()) \
-             .filter(F.col("LanguageHaveWorkedWith").isNotNull()) \
-             .filter(F.col("DevType") != "NA") \
-             .filter(F.col("LanguageHaveWorkedWith") != "NA")
+    # Handle schema differences across survey years
+
+    if "ResponseId" in df.columns:
+        id_col = "ResponseId"
+    elif "Respondent" in df.columns:
+        id_col = "Respondent"
+    else:
+        raise ValueError("No user identifier column found")
+
+    lang_col = (
+        "LanguageHaveWorkedWith"
+        if "LanguageHaveWorkedWith" in df.columns
+        else "LanguageWorkedWith"
+    )
+
+    # Select relevant columns
+    df = df.select(
+            F.col(id_col).alias("ResponseId"),
+            "DevType",
+            F.col(lang_col).alias("LanguageWorkedWith")
+        ) \
+        .filter(F.col("DevType").isNotNull()) \
+        .filter(F.col("LanguageWorkedWith").isNotNull()) \
+        .filter(F.col("DevType") != "NA") \
+        .filter(F.col("LanguageWorkedWith") != "NA")
 
     # Map DevType
     map_expr = F.create_map(*[
@@ -109,7 +128,7 @@ def load_and_preprocess(csv_path, year, progress_cb=None):
     # Explode skills
     df_skills = df \
         .withColumn("skill_raw",
-            F.explode(F.split(F.col("LanguageHaveWorkedWith"), ";"))) \
+            F.explode(F.split(F.col("LanguageWorkedWith"), ";"))) \
         .withColumn("skill", F.trim(F.col("skill_raw"))) \
         .filter(F.col("skill") != "") \
         .filter(F.col("skill") != "NA") \

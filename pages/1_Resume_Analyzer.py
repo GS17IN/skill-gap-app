@@ -44,9 +44,9 @@ with st.expander("How is this different from basic keyword matching?"):
         st.markdown("""
         **BERT Analyzer (Semantic)**
         - Understands meaning and context
-        - Catches: "built REST APIs with Express" - Node.js
-        - Catches: "deployed on EKS" - Kubernetes
-        - Catches: "used GKE for orchestration" - Kubernetes
+        - Catches: "built REST APIs with Express" → Node.js 
+        - Catches: "deployed on EKS" → Kubernetes 
+        - Catches: "used GKE for orchestration" → Kubernetes 
         - Slightly slower but higher recall
         """)
 
@@ -82,6 +82,7 @@ if not text.strip():
 st.success(f"Extracted {len(text):,} characters from resume")
 
 with st.expander("View extracted text"):
+with st.expander("View extracted text"):
     st.text(text[:2000] + ("..." if len(text) > 2000 else ""))
 
 section_divider()
@@ -107,6 +108,7 @@ c3.metric("BERT-only Finds",
 c4.metric("Both Methods",
           len(skills_df[skills_df["method"] == "Both"]))
 
+st.markdown("#### Extracted Skills")
 st.markdown("#### Extracted Skills")
 tab1, tab2, tab3 = st.tabs(["All Skills", "High Confidence", "BERT-only Finds"])
 
@@ -144,6 +146,11 @@ step_label(3, "BERT Role Detection")
 
 with st.spinner("Running BERT role classification..."):
     role_rankings = detect_role_bert(text)
+
+    st.session_state.resume_skills  = [r["skill"] for r in skill_results
+                                    if r["confidence"] == "High"]
+    st.session_state.detected_role  = role_rankings[0][0] if role_rankings else None
+    st.session_state.resume_text    = text
 
 st.markdown("**Role similarity scores — higher = better match:**")
 
