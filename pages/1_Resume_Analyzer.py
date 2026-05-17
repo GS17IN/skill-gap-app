@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import matplotlib
+import hashlib
 matplotlib.use("Agg")
 import pdfplumber
 import docx
@@ -59,6 +60,19 @@ uploaded = st.file_uploader(
     type=["pdf", "docx"]
 )
 
+if uploaded:
+    # Compute hash of uploaded file
+    file_bytes = uploaded.read()
+    file_hash  = hashlib.md5(file_bytes).hexdigest()
+    uploaded.seek(0)  
+    # If this is a newfile, clear old session state immediately
+    if st.session_state.get("last_resume_hash") != file_hash:
+        st.session_state.resume_skills  = []
+        st.session_state.detected_role  = None
+        st.session_state.resume_text    = ""
+        st.session_state.last_resume_hash = file_hash
+        st.info(" New resume detected — re-analysing...")
+
 if not uploaded:
     st.info("Upload a resume to begin BERT analysis.")
     st.stop()
@@ -92,6 +106,20 @@ step_label(2, "BERT Skill Extraction")
 with st.spinner("Running BERT semantic skill extraction... ~15 seconds"):
     skill_results = extract_skills_combined(text)
 
+# Store to session state
+st.session_state.resume_skills = [
+    r["skill"] for r in skill_results
+    if r["confidence"] == "High"
+]
+st.session_state.resume_text = text
+
+# run role detection
+with st.spinner("Running BERT role classification..."):
+    role_rankings = detect_role_bert(text)
+    st.session_state.detected_role = (
+        role_rankings[0][0] if role_rankings else None
+    )
+
 if not skill_results:
     st.warning("No skills detected. Make sure resume has technical content.")
     st.stop()
@@ -107,7 +135,6 @@ c3.metric("BERT-only Finds",
 c4.metric("Both Methods",
           len(skills_df[skills_df["method"] == "Both"]))
 
-st.markdown("#### Extracted Skills")
 st.markdown("#### Extracted Skills")
 tab1, tab2, tab3 = st.tabs(["All Skills", "High Confidence", "BERT-only Finds"])
 
@@ -142,14 +169,6 @@ section_divider()
 
 # Step 3: BERT Role Detection
 step_label(3, "BERT Role Detection")
-
-with st.spinner("Running BERT role classification..."):
-    role_rankings = detect_role_bert(text)
-
-    st.session_state.resume_skills  = [r["skill"] for r in skill_results
-                                    if r["confidence"] == "High"]
-    st.session_state.detected_role  = role_rankings[0][0] if role_rankings else None
-    st.session_state.resume_text    = text
 
 st.markdown("**Role similarity scores — higher = better match:**")
 

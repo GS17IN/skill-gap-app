@@ -54,21 +54,24 @@ def get_job_market_recs(db, role, resume_skills):
         and row["skill"] != ""
     ][:15]
 
-def build_roadmap(missing_skills, job_market_recs):
-    survey_set     = set(missing_skills)
-    job_set        = set(job_market_recs)
-    all_skills     = survey_set | job_set
-    roadmap = []
-    for skill in all_skills:
+def build_roadmap(missing, job_recs):
+    rows = []
+    for skill in missing:
         sources = []
-        if skill in survey_set: sources.append("Survey Gap")
-        if skill in job_set:    sources.append("Job Market")
-        roadmap.append({
+        if skill in [s for s in missing]:
+            sources.append("Survey Gap")
+        if skill in job_recs:
+            sources.append("Job Market")
+        priority = len(sources)
+        rows.append({
             "Skill":    skill,
-            "Priority": len(sources),
+            "Priority": priority,
             "Sources":  ", ".join(sources)
         })
-    return pd.DataFrame(roadmap) \
-             .sort_values(["Priority", "Skill"],
-                          ascending=[False, True]) \
-             .reset_index(drop=True)
+
+    if not rows:
+        return pd.DataFrame(columns=["Skill", "Priority", "Sources"])
+
+    df = pd.DataFrame(rows)                       
+    df = df.sort_values("Priority", ascending=False).reset_index(drop=True)
+    return df

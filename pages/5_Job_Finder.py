@@ -39,27 +39,34 @@ if "live_jobs" not in st.session_state:
 # Check for resume from Resume Analyzer 
 step_label(1, "Resume Profile")
 
-if not st.session_state.get("resume_skills"):
-    st.warning(
-        "No resume analyzed yet. "
-        "Please go to **Resume Analyzer** first."
-    )
-    st.page_link(
-        "pages/1_Resume_Analyzer.py",
-        label="→ Go to Resume Analyzer",
-        icon="📄"
-    )
-    st.stop()
+if st.session_state.get("resume_skills"):
+    col1, col2 = st.columns([3,1])
 
-# Skills loaded from BERT analyzer
-st.success(
-    f"Resume profile loaded from BERT Analyzer — "
-    f"**{len(st.session_state.resume_skills)} skills** detected"
-)
-skill_badges(sorted(st.session_state.resume_skills), variant="high")
+    with col1:
+        st.success(
+            f"Using resume from BERT Analyzer — "
+            f"**{len(st.session_state.resume_skills)} skills** detected"
+        )
 
-if st.session_state.get("detected_role"):
-    st.info(f" BERT detected role: **{st.session_state.detected_role}**")
+    with col2:
+        if st.button("Re-analyse resume"):
+            st.switch_page("pages/1_Resume_Analyzer.py")
+
+    if st.session_state.get("last_resume_hash"):
+        st.caption(
+            f"Resume ID: `{st.session_state.last_resume_hash[:8]}...`"
+        )
+
+    skill_badges(
+        sorted(st.session_state.resume_skills),
+        variant="high"
+    )
+
+    if st.session_state.get("detected_role"):
+        st.info(
+            f"BERT detected role: "
+            f"**{st.session_state.detected_role}**"
+        )
 
 section_divider()
 
