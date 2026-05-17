@@ -82,7 +82,6 @@ if not text.strip():
 st.success(f"Extracted {len(text):,} characters from resume")
 
 with st.expander("View extracted text"):
-with st.expander("View extracted text"):
     st.text(text[:2000] + ("..." if len(text) > 2000 else ""))
 
 section_divider()

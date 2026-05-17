@@ -36,9 +36,8 @@ if "detected_role" not in st.session_state:
 if "live_jobs" not in st.session_state:
     st.session_state.live_jobs = []
 
-# Step 1: Upload Resume
-step_label(1, "Upload Resume")
-uploaded = st.file_uploader("Upload PDF or DOCX", type=["pdf", "docx"])
+# Check for resume from Resume Analyzer 
+step_label(1, "Resume Profile")
 
 if not st.session_state.get("resume_skills"):
     st.warning(
